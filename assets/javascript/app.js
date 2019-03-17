@@ -18,13 +18,19 @@ trainRef.on("child_added", function (snapshot) {
   var name = snapshot.val().name;
   var dest = snapshot.val().destination;
   var first = snapshot.val().firstTrain;
-  var freq = snapshot.val().frequency;
+  var freq = parseInt(snapshot.val().frequency);
+
+  var remaining = moment().diff(moment.unix(first), "minutes") % freq;
+  var nextTrain = freq - remaining;
+
+  var arrival = moment().add(nextTrain, "minutes").format("hh:mm A");
 
   var newRow = $("<tr>").append(
     $("<td>").text(name),
     $("<td>").text(dest),
-    $("<td>").text(first),
-    $("<td>").text(freq)
+    $("<td>").text(freq + " min"),
+    $("<td>").text(arrival),
+    $("<td>").text(nextTrain)
   );
 
   $("#train-table").append(newRow);
@@ -40,14 +46,14 @@ $("#add-train").on("click", function (event) {
 
   var name = $("#name").val().trim();
   var dest = $("#destination").val().trim();
-  var first = moment($("#first-train").val().trim(), "MM/DD/YYYY").format("X");
+  var first = moment($("#first-train").val().trim(), "HH:mm").subtract(1, "years").format("X");
   var freq = $("#frequency").val().trim();
 
   var newTrain = {
     name: name,
     destination: dest,
     firstTrain: first,
-    frequency: freq
+    frequency: freq,
   };
 
   trainRef.push(newTrain);
@@ -55,3 +61,24 @@ $("#add-train").on("click", function (event) {
   $("#name, #destination, #first-train, #frequency").val("");
 });
 
+var cities = [
+  "Salt Lake City",
+  "West Valley City",
+  "Provo",
+  "West Jordan",
+  "Orem",
+  "Sandy",
+  "Ogden",
+  "St. George",
+  "Layton",
+  "Taylorsville",
+  "South Jordan",
+  "Lehi",
+  "Logan",
+  "Murray",
+  "Draper",
+  "Bountiful",
+  "Riverton",
+  "Roy"
+];
+$("#destination").autocomplete({ source: cities });
