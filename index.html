@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
   <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
   <script src="assets/javascript/moment.js"></script>
@@ -36,7 +38,7 @@
 
           <div class="card-body">
             <table class="table">
-              <thead class="thaed-dark">
+              <thead>
                 <tr>
                   <th scope="col">Train Name</th>
                   <th scope="col">Destination</th>
@@ -66,22 +68,22 @@
             <form>
               <div class="form-group">
                 <label for="name">Train Name</label>
-                <input type="text" name="name" class="form-control" id="name">
+                <input type="text" name="name" class="form-control" id="name" required>
               </div>
 
               <div class="form-group">
                 <label for="name">Destination</label>
-                <input type="text" name="destination" class="form-control" id="destination">
+                <input type="text" name="destination" class="form-control" id="destination" required>
               </div>
 
               <div class="form-group">
                 <label for="name">First Train</label>
-                <input type="time" name="first-train" class="form-control" id="first-train" value="00:00">
+                <input type="time" name="first-train" class="form-control" id="first-train" value="00:00" required>
               </div>
 
               <div class="form-group">
                 <label for="name">Frequency (min)</label>
-                <input type="number" name="frequency" class="form-control" id="frequency">
+                <input type="number" name="frequency" class="form-control" id="frequency" required>
               </div>
 
               <button class="btn btn-primary" id="add-train" type="submit">Submit</button>
