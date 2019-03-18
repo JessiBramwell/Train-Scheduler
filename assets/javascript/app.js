@@ -12,22 +12,20 @@ $(document).ready(function () {
   firebase.initializeApp(config);
 
   var database = firebase.firestore();
-  // var trainRef = database.ref("/train-data");
 
-  function updateDOM(snapshot) {
-    alert("updateDOM");
-    
-    var name = snapshot.val().name;
-    var dest = snapshot.val().destination;
-    var first = snapshot.val().firstTrain;
-    var freq = parseInt(snapshot.val().frequency);
+  function updateDOM(doc) {
+
+    var name = doc.data().name;
+    var dest = doc.data().destination;
+    var first = doc.data().firstTrain;
+    var freq = parseInt(doc.data().frequency);
 
     var remaining = moment().diff(moment.unix(first), "minutes") % freq;
     var nextTrain = freq - remaining;
 
     var arrival = moment().add(nextTrain, "minutes").format("hh:mm A");
 
-    var newRow = $("<tr>").addClass("train-info").attr("data-id", snapshot.key);
+    var newRow = $("<tr>").addClass("train-info").attr("data-id", doc.id);
 
     newRow.append(
       $("<td>").text(name),
@@ -41,24 +39,24 @@ $(document).ready(function () {
     $("#train-table").append(newRow);
   }
 
-  // trainRef.on("child_added", function (snapshot) {
-  //   updateDOM(snapshot);
+  // deleting data
+  $("#train-table").on("click", ".close", function (event) {
+    event.stopPropagation();
 
-  // }, function (errorObject) {
-  //   console.log("The read failed: " + errorObject.code);
-  // });
+    let row = event.target.closest(".train-info")
+    let id = row.getAttribute("data-id")
 
+    database.collection("train-data").doc(id).delete();
+    row.remove();
+  });
 
   database.collection("train-data").onSnapshot(function (snapshot) {
     var changes = snapshot.docChanges();
-    console.log(changes)
     changes.forEach(function (change) {
       if (change.type === "added") {
         updateDOM(change.doc)
-      } else if (change.type === "removed") {
-        alert("removed")
       }
-    })
+    });
   });
 
   // Add Train Data on click
@@ -77,27 +75,27 @@ $(document).ready(function () {
       frequency: freq,
     };
 
-    // trainRef.push(newTrain);
     database.collection("train-data").add(newTrain)
 
     $("#name, #destination, #first-train, #frequency").val("");
   });
 
-  // Remove Table Row 
-  $("#train-table").on("click", ".close", function (event) {
+  // edit data
+  $("#train-table").on("dblclick", ".train-info", function (event) {
     event.stopPropagation();
     let row = event.target.closest(".train-info")
     let id = row.getAttribute("data-id")
 
-    console.log(id)
+    alert("clicked");
+  
 
-    trainRef.child(id).remove();
-    // *** this isn't working - come back to it
-    // trainRef.on("child_removed", function (snapshot) {
-    //   updateDOM(snapshot);
-    // }, function (errorObject) {
-    //   console.log("The read failed: " + errorObject.code);
-    // });
+
+    // $("#name").val()
+
+    // var dest = $("#destination")
+    // var first = $("#first-train")
+    // var freq = $("#frequency")
+
 
   });
 
