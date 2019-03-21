@@ -7,18 +7,141 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Train Scheduler</title>
 
+  <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
     integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
-  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
-  <script src="assets/javascript/moment.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-firestore.js"></script>
 </head>
 
 <body>
   <div class="container">
+    <ul class="nav justify-content-end">
+      <li class="nav-item logged-out">
+        <a class="nav-link" data-toggle="modal" data-target="#modal-login" href="#">Login</a>
+      </li>
+      <li class="nav-item logged-out">
+        <a class="nav-link" data-toggle="modal" data-target="#modal-signup" href="#">Sign up</a>
+      </li>
+      <li class="nav-item logged-in">
+        <a class="nav-link" href="#">Logout</a>
+      </li>
+    </ul>
+
+    <!-- Sign Up Modal -->
+    <div class="modal" id="modal-signup" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Sign up</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="signup-email">Email address:</label>
+              <input type="email" class="form-control" id="signup-email" required />
+            </div>
+            <div class="form-group">
+              <label for="signup-password">Password:</label>
+              <input type="password" class="form-control" id="signup-password" required />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Sign up</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="modal-login" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Login</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="signup-email">Email address:</label>
+              <input type="email" class="form-control" id="signup-email" required />
+            </div>
+            <div class="form-group">
+              <label for="signup-password">Password:</label>
+              <input type="password" class="form-control" id="signup-password" required />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Train Modal -->
+    <div class="modal fade" id="add-train" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Train</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card">
+
+                    <div class="card-body">
+                      <form id="form">
+                        <div class="form-group">
+                          <label for="name">Train Name</label>
+                          <input type="text" name="name" class="form-control" id="name" required>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="name">Destination</label>
+                          <input type="text" name="destination" class="form-control" id="destination" required>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="name">First Train</label>
+                          <input type="time" name="first-train" class="form-control" id="first-train" value="00:00"
+                            required>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="name">Frequency (min)</label>
+                          <input type="number" name="frequency" class="form-control" id="frequency" required>
+                        </div>
+
+                      </form>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button class="btn btn-primary" id="new-train" type="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Jumbotron -->
     <div class="jumbotron">
       <h1 class="display-4">Train Scheduler</h1>
@@ -32,8 +155,9 @@
       <div class="col-12">
         <div class="card">
 
-          <div class="card-header">
+          <div class="card-header d-flex justify-content-between">
             <h5>Current Train Schedule</h5>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#add-train">Add Train</button>
           </div>
 
           <div class="card-body">
@@ -47,7 +171,7 @@
                   <th scope="col">Minutes Away</th>
                 </tr>
               </thead>
-              <tbody class="table-striped" id="train-table"></tbody>
+              <tbody id="train-table"></tbody>
             </table>
           </div>
 
@@ -55,55 +179,24 @@
       </div>
     </div>
 
-    <!-- Add Train -->
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-
-          <div class="card-header">
-            <h5>Add Train</h5>
-          </div>
-
-          <div class="card-body">
-            <form>
-              <div class="form-group">
-                <label for="name">Train Name</label>
-                <input type="text" name="name" class="form-control" id="name" required>
-              </div>
-
-              <div class="form-group">
-                <label for="name">Destination</label>
-                <input type="text" name="destination" class="form-control" id="destination" required>
-              </div>
-
-              <div class="form-group">
-                <label for="name">First Train</label>
-                <input type="time" name="first-train" class="form-control" id="first-train" value="00:00" required>
-              </div>
-
-              <div class="form-group">
-                <label for="name">Frequency (min)</label>
-                <input type="number" name="frequency" class="form-control" id="frequency" required>
-              </div>
-
-              <button class="btn btn-primary" id="add-train" type="submit">Submit</button>
-
-            </form>
-          </div>
-
-        </div>
-      </div>
-    </div>
 
   </div>
 
 
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+
   <script src="assets/javascript/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
   <script src="assets/javascript/jquery-ui-1.12.1.custom//jquery-ui.min.js"></script>
   <script src="assets/javascript/app.js"></script>
-
 
 </body>
 

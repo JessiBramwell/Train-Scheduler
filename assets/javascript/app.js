@@ -10,21 +10,16 @@ $(document).ready(function () {
   };
 
   firebase.initializeApp(config);
-
   var database = firebase.firestore();
-
   function updateDOM(doc) {
 
     var name = doc.data().name;
     var dest = doc.data().destination;
     var first = doc.data().firstTrain;
     var freq = parseInt(doc.data().frequency);
-
     var remaining = moment().diff(moment.unix(first), "minutes") % freq;
     var nextTrain = freq - remaining;
-
     var arrival = moment().add(nextTrain, "minutes").format("hh:mm A");
-
     var newRow = $("<tr>").addClass("train-info").attr("data-id", doc.id);
 
     newRow.append(
@@ -39,28 +34,16 @@ $(document).ready(function () {
     $("#train-table").append(newRow);
   }
 
-  // deleting data
-  $("#train-table").on("click", ".close", function (event) {
-    event.stopPropagation();
-
-    let row = event.target.closest(".train-info")
-    let id = row.getAttribute("data-id")
-
-    database.collection("train-data").doc(id).delete();
-    row.remove();
-  });
-
   database.collection("train-data").onSnapshot(function (snapshot) {
     var changes = snapshot.docChanges();
     changes.forEach(function (change) {
-      if (change.type === "added") {
-        updateDOM(change.doc)
-      }
+      updateDOM(change.doc)
     });
+    console.log(changes)
   });
 
-  // Add Train Data on click
-  $("#add-train").on("click", function (event) {
+  // Add Data on click
+  $("#new-train").on("click", function (event) {
     event.preventDefault();
 
     var name = $("#name").val().trim();
@@ -75,28 +58,48 @@ $(document).ready(function () {
       frequency: freq,
     };
 
-    database.collection("train-data").add(newTrain)
+    var formID = $("#form").data().id
+
+    if (formID === undefined) {
+      database.collection("train-data").add(newTrain);
+    } else {
+      database.collection("train-data").doc(formID).update(newTrain);
+    }
 
     $("#name, #destination, #first-train, #frequency").val("");
+    $("#add-train").modal("hide");
   });
 
   // edit data
   $("#train-table").on("dblclick", ".train-info", function (event) {
     event.stopPropagation();
+
+    $("#add-train").modal("show");
+
+    let row = event.target.closest(".train-info");
+    let id = row.getAttribute("data-id");
+    $("#form").attr("data-id", id)
+
+    database.collection("train-data").doc(id).get().then(function (querySnapshot) {
+      console.log(querySnapshot.data());
+      let value = querySnapshot.data();
+
+      $("#name").val(value.name);
+      $("#destination").val(value.destination);
+      $("#first-train").val(moment(value.firstTrain, "X").format("HH:mm"));
+      $("#frequency").val(value.frequency);
+    });
+    row.remove();
+  });
+
+  // deleting data
+  $("#train-table").on("click", ".close", function (event) {
+    event.stopPropagation();
     let row = event.target.closest(".train-info")
     let id = row.getAttribute("data-id")
 
-    alert("clicked");
-  
-
-
-    // $("#name").val()
-
-    // var dest = $("#destination")
-    // var first = $("#first-train")
-    // var freq = $("#frequency")
-
-
+    database.collection("train-data").doc(id).delete();
+    row.remove();
   });
 
   var cities = [
@@ -122,3 +125,4 @@ $(document).ready(function () {
   $("#destination").autocomplete({ source: cities });
 
 });
+
