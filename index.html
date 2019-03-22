@@ -21,17 +21,21 @@
 
 <body>
   <div class="container">
-    <ul class="nav justify-content-end">
-      <li class="nav-item logged-out" style="display: none">
-        <a class="nav-link" data-toggle="modal" data-target="#modal-login" href="#">Login</a>
-      </li>
-      <li class="nav-item logged-out" style="display: none">
-        <a class="nav-link" data-toggle="modal" data-target="#modal-signup" href="#">Sign up</a>
-      </li>
-      <li class="nav-item logged-in" style="display: none">
-        <a class="nav-link" id="logout" href="#">Logout</a>
-      </li>
-    </ul>
+    <nav class="navbar">
+      <a class="navbar-brand" href="#"><i class="fas fa-archway"></i></a>
+
+      <ul class="nav justify-content-end">
+        <li class="nav-item logged-out" style="display: none">
+          <a class="nav-link" data-toggle="modal" data-target="#modal-login" href="#">Login</a>
+        </li>
+        <li class="nav-item logged-out" style="display: none">
+          <a class="nav-link" data-toggle="modal" data-target="#modal-signup" href="#">Sign up</a>
+        </li>
+        <li class="nav-item logged-in" style="display: none">
+          <a class="nav-link" id="logout" href="#">Logout</a>
+        </li>
+      </ul>
+    </nav>
 
     <!-- Sign Up Modal -->
     <div class="modal" id="modal-signup" tabindex="-1" role="dialog">
@@ -92,7 +96,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Add Train</h5>
+            <h5 class="modal-title">Update Schedule</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -135,7 +139,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button class="btn btn-danger" id="del-train" type="button">Delete</button>
             <button class="btn btn-primary" id="new-train" type="submit">Submit</button>
           </div>
         </div>
@@ -144,10 +148,8 @@
 
     <!-- Jumbotron -->
     <div class="jumbotron">
-      <h1 class="display-4">Train Scheduler</h1>
-      <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to
-        featured
-        content or information.</p>
+      <h1 class="display-4"><i class="fas fa-subway"></i> Train Scheduler</h1>
+      <p class="lead">Create an account to make changes</p>
     </div>
 
     <!-- Current Train Schedule -->
@@ -157,7 +159,7 @@
 
           <div class="card-header d-flex justify-content-between">
             <h5>Current Train Schedule</h5>
-            <button type="button" class="btn btn-light logged-in" data-toggle="modal" data-target="#add-train">Add
+            <button type="button" class="btn btn-warning logged-in" data-toggle="modal" data-target="#add-train">Add
               Train</button>
           </div>
 

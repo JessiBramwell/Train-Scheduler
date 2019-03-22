@@ -1,7 +1,13 @@
-.hover-effect >.train-info:hover {
-  color: #ffffff;
-  text-decoration: none;
-  background-color: #80bdff;
+body {
+  background-color: #234;
+}
+.navbar a {
+  color: #fff;
+}
+.hover {
+  background-color: #234;
+  opacity: .7;
+  color: #fff;
 }
 .close {
   opacity: .3;
@@ -11,7 +17,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000;
+  z-index: 9999;
   float: left;
   display: none;
   min-width: 160px;

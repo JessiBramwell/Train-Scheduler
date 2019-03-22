@@ -19,12 +19,14 @@ $(document).ready(function () {
     if (user) {
       $(".logged-out").hide();
       $(".logged-in").show();
-      $("#train-table").addClass("hover-effect");
+      $("#train-table").addClass("active");
+      $(".lead").hide();
     } else {
       console.log("not logged in")
       $(".logged-out").show();
       $(".logged-in").hide();
-      $("#train-table").removeClass("hover-effect");
+      $("#train-table").removeClass("active");
+      $(".lead").show().text("Create an account or sign in to make changes to the schedule");
     }
   });
 
@@ -70,7 +72,7 @@ $(document).ready(function () {
     auth.signOut().then(function () {
       console.log("logout worked");
     }).catch(function (error) {
-      console.log(error)
+      console.log(error);
     })
   });
 
@@ -92,7 +94,7 @@ $(document).ready(function () {
       $("<td>").text(freq + " min"),
       $("<td>").text(arrival),
       $("<td>").text(nextTrain).append(
-        $("<button type='button' class='close' aria-label='Close'>").html($("<span aria-hidden='true'>&times;</span>")))
+        $("<button type='button' class='close' style='display:none' aria-label='Close'>").html($("<span aria-hidden='true'>&times;</span>")))
     );
 
     $("#train-table").append(newRow);
@@ -102,7 +104,9 @@ $(document).ready(function () {
   database.collection("train-data").onSnapshot(function (snapshot) {
     var changes = snapshot.docChanges();
     changes.forEach(function (change) {
-      updateDOM(change.doc)
+      if (change.type === "added" || change.type === "modified") {
+        updateDOM(change.doc);
+      }
     });
     console.log(changes)
   });
@@ -123,7 +127,7 @@ $(document).ready(function () {
       frequency: freq,
     };
 
-    var formID = $("#form").data().id
+    var formID = $("#form").data().id;
 
     if (formID === undefined) {
       database.collection("train-data").add(newTrain);
@@ -131,16 +135,15 @@ $(document).ready(function () {
       database.collection("train-data").doc(formID).update(newTrain);
     }
 
+    $("#form").removeData("id");
     $("#name, #destination, #first-train, #frequency").val("");
     $("#add-train").modal("hide");
   });
 
   // edit data
-  console.log(auth.currentUser)
-  if (auth.currentUser) {
-    $("#train-table").on("dblclick", ".train-info", function (event) {
-      event.stopPropagation();
-
+  $("#train-table").on("dblclick", ".train-info", function (event) {
+    event.stopPropagation();
+    if (auth.currentUser) {
       $("#add-train").modal("show");
 
       let row = event.target.closest(".train-info");
@@ -157,18 +160,30 @@ $(document).ready(function () {
         $("#frequency").val(value.frequency);
       });
       row.remove();
-    });
+    }
+  });
 
-    // deleting data
-    $("#train-table").on("click", ".close", function (event) {
-      event.stopPropagation();
-      let row = event.target.closest(".train-info")
-      let id = row.getAttribute("data-id")
+  // deleting data
+  $("#del-train").on("click", function (event) {
+    event.stopPropagation();
+    let id = $("#form").data().id;
+    let row = $(".train-info").find(`[data-id='${id}']`)
+    $("#add-train").modal("hide");
 
-      database.collection("train-data").doc(id).delete();
-      row.remove();
-    });
-  }
+    database.collection("train-data").doc(id).delete();
+    row.remove();
+  });
+
+
+  $(document).on({
+    mouseenter: function () {
+      $(this).toggleClass("hover")
+    },
+    mouseleave: function () {
+      $(this).toggleClass("hover")
+      $(".close").hide();
+    }
+  }, ".active .train-info");
 
   var cities = [
     "Salt Lake City",
@@ -190,6 +205,7 @@ $(document).ready(function () {
     "Riverton",
     "Roy"
   ];
+
   $("#destination").autocomplete({ source: cities });
 
 });
