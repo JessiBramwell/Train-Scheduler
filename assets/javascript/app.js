@@ -6,11 +6,75 @@ $(document).ready(function () {
     databaseURL: "https://train-scheduler-4b6e4.firebaseio.com",
     projectId: "train-scheduler-4b6e4",
     storageBucket: "train-scheduler-4b6e4.appspot.com",
-    messagingSenderId: "602003273998"
+
   };
 
   firebase.initializeApp(config);
-  var database = firebase.firestore();
+  const database = firebase.firestore();
+  const auth = firebase.auth();
+
+  // listen for auth status changes
+  auth.onAuthStateChanged(function (user) {
+    console.log(user);
+    if (user) {
+      $(".logged-out").hide();
+      $(".logged-in").show();
+      $("#train-table").addClass("hover-effect");
+    } else {
+      console.log("not logged in")
+      $(".logged-out").show();
+      $(".logged-in").hide();
+      $("#train-table").removeClass("hover-effect");
+    }
+  });
+
+  // admin signup 
+  $("#signup-form").on("submit", function (e) {
+    e.preventDefault();
+    console.log("signup worked")
+
+    // user info
+    const email = $("#signup-email").val().trim();
+    const password = $("#signup-password").val().trim();
+
+    // user signup
+    auth.createUserWithEmailAndPassword(email, password).then(function (credentials) {
+      console.log(credentials)
+      $("#modal-signup").modal("hide");
+      $("#signup-email, #signup-password").val("");
+    });
+  });
+
+  // admin login 
+  $("#login-form").on("submit", function (e) {
+    e.preventDefault();
+    console.log("login worked")
+
+    // user info
+    const email = $("#login-email").val().trim();
+    const password = $("#login-password").val().trim();
+
+    // user login
+    auth.signInWithEmailAndPassword(email, password).then(function (credentials) {
+      console.log(credentials)
+      $("#modal-login").modal("hide");
+      $("#login-email, #login-password").val("");
+    }).catch(function (error) {
+      console.log(error)
+    });
+  });
+
+  // admin logout
+  $("#logout").on("click", function (e) {
+    e.preventDefault();
+    auth.signOut().then(function () {
+      console.log("logout worked");
+    }).catch(function (error) {
+      console.log(error)
+    })
+  });
+
+  // update dom elements using database data
   function updateDOM(doc) {
 
     var name = doc.data().name;
@@ -34,6 +98,7 @@ $(document).ready(function () {
     $("#train-table").append(newRow);
   }
 
+  // track database changes
   database.collection("train-data").onSnapshot(function (snapshot) {
     var changes = snapshot.docChanges();
     changes.forEach(function (change) {
@@ -71,36 +136,39 @@ $(document).ready(function () {
   });
 
   // edit data
-  $("#train-table").on("dblclick", ".train-info", function (event) {
-    event.stopPropagation();
+  console.log(auth.currentUser)
+  if (auth.currentUser) {
+    $("#train-table").on("dblclick", ".train-info", function (event) {
+      event.stopPropagation();
 
-    $("#add-train").modal("show");
+      $("#add-train").modal("show");
 
-    let row = event.target.closest(".train-info");
-    let id = row.getAttribute("data-id");
-    $("#form").attr("data-id", id)
+      let row = event.target.closest(".train-info");
+      let id = row.getAttribute("data-id");
+      $("#form").attr("data-id", id)
 
-    database.collection("train-data").doc(id).get().then(function (querySnapshot) {
-      console.log(querySnapshot.data());
-      let value = querySnapshot.data();
+      database.collection("train-data").doc(id).get().then(function (querySnapshot) {
+        console.log(querySnapshot.data());
+        let value = querySnapshot.data();
 
-      $("#name").val(value.name);
-      $("#destination").val(value.destination);
-      $("#first-train").val(moment(value.firstTrain, "X").format("HH:mm"));
-      $("#frequency").val(value.frequency);
+        $("#name").val(value.name);
+        $("#destination").val(value.destination);
+        $("#first-train").val(moment(value.firstTrain, "X").format("HH:mm"));
+        $("#frequency").val(value.frequency);
+      });
+      row.remove();
     });
-    row.remove();
-  });
 
-  // deleting data
-  $("#train-table").on("click", ".close", function (event) {
-    event.stopPropagation();
-    let row = event.target.closest(".train-info")
-    let id = row.getAttribute("data-id")
+    // deleting data
+    $("#train-table").on("click", ".close", function (event) {
+      event.stopPropagation();
+      let row = event.target.closest(".train-info")
+      let id = row.getAttribute("data-id")
 
-    database.collection("train-data").doc(id).delete();
-    row.remove();
-  });
+      database.collection("train-data").doc(id).delete();
+      row.remove();
+    });
+  }
 
   var cities = [
     "Salt Lake City",

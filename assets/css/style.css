@@ -1,4 +1,4 @@
-.train-info:hover {
+.hover-effect >.train-info:hover {
   color: #ffffff;
   text-decoration: none;
   background-color: #80bdff;
@@ -11,7 +11,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 9999;
+  z-index: 1000;
   float: left;
   display: none;
   min-width: 160px;
