@@ -114,6 +114,7 @@ $(document).ready(function () {
   // Add Data on click
   $("#new-train").on("click", function (event) {
     event.preventDefault();
+    $("#del-train").hide();
 
     var name = $("#name").val().trim();
     var dest = $("#destination").val().trim();
@@ -144,6 +145,7 @@ $(document).ready(function () {
   $("#train-table").on("dblclick", ".train-info", function (event) {
     event.stopPropagation();
     if (auth.currentUser) {
+      $("#del-train").show();
       $("#add-train").modal("show");
 
       let row = event.target.closest(".train-info");
