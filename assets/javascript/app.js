@@ -6,7 +6,6 @@ $(document).ready(function () {
     databaseURL: "https://train-scheduler-4b6e4.firebaseio.com",
     projectId: "train-scheduler-4b6e4",
     storageBucket: "train-scheduler-4b6e4.appspot.com",
-
   };
 
   firebase.initializeApp(config);
