@@ -11,12 +11,16 @@ The Train-Scheduler project was an introduction to Googles Firebase Database and
 * Submit your changes and see them updated on the list
 
 ![Home page to train scheduler](assets/img/train-home.png)
-![Login modal for train scheduler](assets/img/train-login.png)
 
-It was built using bootstrap and utilizes momentjs to calculate train arrival times.
+![Login modal for train scheduler](assets/img/train-login.png)
 
 ![Hover effect for train scheduler](assets/img/train-hover.png)
 
+![Edit modal for train scheduler](assets/img/train-edit.png)
+
+It was built using bootstrap and utilizes momentjs to calculate train arrival times.
 Challenges included determining how to calculate arrival times and making changes to the data when data was edited or deleted. 
 
-![Edit modal for train scheduler](assets/img/train-edit.png)
+## Roadmap
+
+The next update will use an API to autocomplete for any US city and improve form validation and data sanitization and well as more stringent user authentication. 
