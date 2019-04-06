@@ -7,13 +7,13 @@ https://jessibramwell.github.io/Train-Scheduler/
 The Train-Scheduler project was an introduction to Googles Firebase Database and Firebase Authentication. It allows you to create an account or sign into an existing account. After a user has signed in they are able to add a train to the train schedule, and edit or delete items on the current list. 
 
 ![Home page to train scheduler](assets/img/train-home.png)
-![Home page to train scheduler](assets/img/train-login.png)
+![Login modal for train scheduler](assets/img/train-login.png)
 
 
 It was built using bootstrap and utilizes momentjs to calculate train arrival times.
 
-![Home page to train scheduler](assets/img/train-hover.png)
+![Hover effect for train scheduler](assets/img/train-hover.png)
 
 Challenges included determining how to calculate arrival times and making changes to the data when data was edited or deleted. 
 
-![Home page to train scheduler](assets/img/train-edit.png)
+![Edit modal for train scheduler](assets/img/train-edit.png)
