@@ -8,7 +8,7 @@ The Train-Scheduler project was an introduction to Googles Firebase Database and
 
 * Create an account with an email and password to make changes to the schedule
 * Add a new train with the "Add Train" button or edit an existing one by double clicking on an item from the list. 
-Submit your changes and see them updated on the list
+* Submit your changes and see them updated on the list
 
 ![Home page to train scheduler](assets/img/train-home.png)
 ![Login modal for train scheduler](assets/img/train-login.png)
